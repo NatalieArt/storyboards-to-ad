@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>How to Turn a Product Photo into a Video Ad with AI | Sogni</title>
+<meta name="description" content="Start with one product photo, generate a cinematic storyboard, and turn it into a finished video commercial with Sogni Chat, GPT Image 2, Seedance 2.0, and LTX 2.3.">
+<style>
+  :root{
+    --bg:#050704;
+    --panel:#0d100c;
+    --panel-2:#121611;
+    --line:#222a20;
+    --ink:#eef2ea;
+    --muted:#9aa395;
+    --soft:#c5ccbe;
+    --accent:#00f0c0;
+    --accent-2:#5bf0d2;
+    --on-accent:#04221b;
+    --magenta:#d24bf5;
+    --radius:18px;
+    --colw:900px;     /* narrow article column (intro / toc / cta) */
+    --stepw:1440px;   /* step card width */
+    --maxw:1440px;    /* full-width band (banner, gallery) */
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  img,video{max-width:100%;display:block}
+
+  .band{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .col{max-width:var(--colw);margin:0 auto;padding:0 22px}
+  .stepwrap{max-width:var(--stepw);margin:0 auto;padding:0 22px}
+
+  /* ---------- top nav (reference style) ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(5,7,4,.9);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+  .topbar .band{display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .brand .logo{display:flex;align-items:center}
+  .brand .logo img{height:26px;width:auto;display:block}
+  .brand .logo:hover{text-decoration:none;filter:brightness(1.12)}
+  .brand .slash{color:var(--muted);font-size:18px;font-weight:300}
+  .brand .sub{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+  .topbar nav{display:flex;align-items:center;gap:22px}
+  .topbar nav a.navlink{color:var(--ink);font-size:14px;font-weight:600}
+  .topbar nav a.navlink:hover{color:var(--accent);text-decoration:none}
+  .topbar nav a.back{color:var(--ink);font-size:14px;font-weight:600;border:1px solid var(--line);padding:9px 18px;border-radius:11px}
+  .topbar nav a.back:hover{border-color:var(--accent);text-decoration:none}
+  .topbar nav a.sub{color:var(--on-accent);background:var(--accent);font-size:14px;font-weight:700;padding:10px 20px;border-radius:11px}
+  .topbar nav a.sub:hover{text-decoration:none;filter:brightness(1.05)}
+  @media(max-width:720px){.brand .sub{display:none}.topbar nav a.navlink{display:none}.topbar nav a.back{display:none}}
+
+  /* ---------- banner ---------- */
+  .banner{margin-top:26px}
+  .banner img{width:100%;border-radius:var(--radius);border:1px solid var(--line)}
+
+  /* ---------- model pills ---------- */
+  .pills{display:flex;flex-wrap:wrap;gap:14px;margin:22px auto 0;max-width:var(--maxw);padding:0 22px}
+  .pill{flex:1 1 240px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+  .pill b{display:block;color:var(--accent);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+  .pill span{color:var(--soft);font-size:14px}
+
+  /* ---------- typography ---------- */
+  .eyebrow{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:700}
+  h1.title{font-size:clamp(30px,5vw,50px);line-height:1.1;margin:.1em 0 .4em;letter-spacing:-.02em}
+  h2{font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:.1em 0 .45em;letter-spacing:-.01em}
+  h3{font-size:clamp(20px,2.4vw,26px);line-height:1.22;margin:.1em 0 .5em;letter-spacing:-.01em}
+  p{color:var(--soft);margin:0 0 1em}
+  .lead{font-size:19px;color:var(--ink)}
+  strong{color:var(--ink)}
+
+  section{padding:30px 0}
+  section.first{padding-top:40px}
+  .topsec{border-bottom:1px solid var(--line);padding-bottom:46px}
+
+  /* feature video (centered) */
+  .feature video,.feature img{width:100%;border-radius:var(--radius);border:1px solid var(--line);background:#000}
+  .center{text-align:center}
+  figcaption{color:var(--muted);font-size:13.5px;margin-top:11px;font-style:italic}
+
+  /* ---------- STEP CARDS: image left, text right, each in a frame ---------- */
+  .step-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    display:grid;grid-template-columns:0.78fr 1.22fr;gap:36px;padding:30px;align-items:start}
+  .step-card .body{order:1}      /* text left */
+  .step-card .media{order:2}     /* image right */
+  .step-card .media figure{margin:0 0 18px}
+  .step-card .media figure:last-child{margin-bottom:0}
+  /* Sogni Chat screenshots: natural ratio, no black letterbox/frame */
+  .step-card .media img,.step-card .media video{display:block;width:auto;max-width:100%;max-height:560px;
+    margin:0 auto;border-radius:12px}
+  /* the "Thinking" panel: a touch smaller than the rest */
+  .step-card .media img[src="ss 1.3.png"]{max-height:300px}
+
+  /* step 04: each paragraph aligned to its own screenshot */
+  .step-card.s4{display:block}
+  .s4-head{display:grid;grid-template-columns:0.78fr 1.22fr;gap:0 36px;margin-bottom:6px}
+  .s4-head > *{grid-column:1}
+  .s4-row{display:grid;grid-template-columns:0.78fr 1.22fr;gap:36px;align-items:start;padding:24px 0;border-top:1px solid var(--line)}
+  .s4-row .body,.s4-row .media{align-self:start}
+  .s4-row .media figure{margin-top:0}
+  .s4-row .body > :first-child{margin-top:0}
+  .s4-head + .s4-row{border-top:none;padding-top:4px}
+  .step-card.s4 > .s4-row:first-child{border-top:none;padding-top:0}
+  .s4-row .note{margin-top:16px}
+  .step-card .media figcaption{text-align:center}
+  .step-card .body p:last-child{margin-bottom:0}
+
+  /* prompt box */
+  .prompt{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:10px;padding:11px 13px;margin:16px 0 0}
+  .prompt .label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .prompt pre{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;color:var(--soft);margin:0;line-height:1.5;max-height:112px;overflow:auto}
+  .copybtn{background:var(--panel);border:1px solid var(--line);color:var(--soft);font-size:10px;letter-spacing:.04em;padding:3px 8px;border-radius:6px;cursor:pointer;flex:none}
+  .copybtn:hover{color:var(--ink);border-color:var(--accent)}
+
+  /* callout */
+  .note{background:linear-gradient(180deg,rgba(0,240,192,.07),rgba(0,240,192,0));border:1px solid var(--line);
+    border-radius:12px;padding:13px 16px;margin:18px 0 0;font-size:14.5px}
+  .note b{color:var(--accent-2)}
+  .note .m{color:var(--accent);font-style:italic;font-weight:600}
+  .note a{color:var(--accent-2);white-space:nowrap}
+
+  /* inline CTAs */
+  .cta-bar{display:flex;align-items:center;justify-content:center;gap:12px 22px;flex-wrap:wrap;text-align:center;
+    background:linear-gradient(135deg,rgba(0,240,192,.13),rgba(0,240,192,.03));border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin:28px 0 0}
+  .cta-bar .t{font-size:18px;font-weight:700;color:var(--ink)}
+  .cta-link{display:inline-flex;align-items:center;gap:7px;color:var(--accent);font-weight:700;font-size:15px;margin-top:6px}
+  .cta-link:hover{text-decoration:none;filter:brightness(1.12)}
+  .cta-hint{display:block;color:var(--muted);font-size:12.5px;margin-top:3px}
+
+  /* sticky CTA after the first video */
+  .sticky-cta{position:sticky;top:82px;z-index:35;display:flex;align-items:center;justify-content:space-between;gap:18px;
+    background:rgba(13,16,12,.94);backdrop-filter:blur(12px);border:1px solid rgba(91,240,210,.28);border-radius:16px;
+    padding:16px 18px;margin:24px 0 0;box-shadow:0 18px 44px rgba(0,0,0,.24);text-align:left}
+  .sticky-cta-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .sticky-cta-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .sticky-cta-copy strong{font-size:18px;line-height:1.2;color:var(--ink)}
+  .sticky-cta-copy span{color:var(--soft);font-size:14px;line-height:1.45}
+  .sticky-cta .btn{white-space:nowrap;flex:none}
+
+  .idea-emphasis{font-size:18px;line-height:1.55;color:var(--ink);font-weight:700}
+
+  /* image lightbox */
+  .lb-zoom{cursor:zoom-in}
+  .lightbox{position:fixed;inset:0;z-index:200;background:rgba(2,4,2,.93);display:none;align-items:center;justify-content:center;padding:30px;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:95vw;max-height:92vh;width:auto;border-radius:10px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.6);cursor:default}
+  .lb-close{position:fixed;top:18px;right:22px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .lb-close:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* TOC */
+  .steps-toc{display:flex;flex-direction:column;gap:8px;margin:14px 0 0;text-align:left}
+  .steps-toc a{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;color:var(--ink);font-size:13.5px;font-weight:600;transition:border-color .15s}
+  .steps-toc a:hover{border-color:var(--accent);text-decoration:none}
+  .steps-toc .num{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* hero: idea text + steps panel side by side */
+  .hero{display:grid;grid-template-columns:1.05fr 0.95fr;gap:42px;align-items:start}
+  .toc-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px 26px 28px}
+  .toc-panel .toc-h{font-size:17px;line-height:1.3;margin:.1em 0 0;letter-spacing:-.01em}
+
+  /* recap flow inside the summary card */
+  .recap-flow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px;margin:18px 0 6px}
+  .recap-flow .r{display:flex;align-items:center;gap:9px;color:var(--soft);font-size:14px;font-weight:600}
+  .recap-flow .r .n{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+  .recap-flow .sep{color:var(--accent);font-weight:800;align-self:center}
+  @media(max-width:860px){.hero{grid-template-columns:1fr;gap:26px}}
+
+  /* ---------- workflow gallery (wide band) ---------- */
+  .gallery-head{max-width:760px;margin:0 auto 38px;text-align:center}
+  .gallery-head h2{margin:.1em 0 .45em}
+  .gallery-head p{margin:0;font-size:16px}
+  .gallery{display:grid;gap:22px}
+  .ad-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .ad-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .ad-head h3{margin:0;font-size:20px}
+  .ad-head .tag{font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .flow{display:grid;grid-template-columns:repeat(3,1fr)}
+  .flow.two{grid-template-columns:repeat(2,1fr)}
+  .flow .cell{padding:18px;border-right:1px solid var(--line);position:relative}
+  .flow .cell:last-child{border-right:none}
+  .flow .cell .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+  .flow .cell .k .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .flow .cell img,.flow .cell video{border-radius:10px;border:1px solid var(--line);width:100%;height:200px;object-fit:contain;background:#070906}
+  .flow .cell p{font-size:13px;color:var(--muted);margin:10px 0 0}
+  .arrow{position:absolute;right:-11px;top:50%;transform:translateY(-50%);z-index:3;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+
+  /* CTA */
+  .cta{background:linear-gradient(135deg,rgba(0,240,192,.12),rgba(0,240,192,.04));border:1px solid var(--line);border-radius:var(--radius);padding:42px;text-align:center}
+  .btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .btn{padding:13px 24px;border-radius:11px;font-weight:600;font-size:15px}
+  .btn.primary{background:var(--accent);color:var(--on-accent)}
+  .btn.primary:hover{text-decoration:none;filter:brightness(1.05)}
+  .btn.ghost{border:1px solid var(--line);color:var(--ink)}
+  .btn.ghost:hover{text-decoration:none;border-color:var(--accent)}
+
+  /* keep-going workflow cards */
+  .next{border-top:1px solid var(--line);padding:46px 0 6px}
+  .next .intro{color:var(--soft);font-size:16px;margin:0 0 22px}
+  .next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .next-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .next-card .plabel{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:12px;letter-spacing:.18em;color:var(--soft);text-transform:uppercase;margin-bottom:18px}
+  .next-card h4{margin:0 0 8px;font-size:19px}
+  .next-card h4 a{color:var(--accent)}
+  .next-card h4 a:hover{text-decoration:none;filter:brightness(1.1)}
+  .next-card p{font-size:14px;margin:0;color:var(--soft)}
+  .next-card p strong{color:var(--accent);font-weight:700}
+
+  /* footer (reference style) */
+  footer{border-top:1px solid var(--line);padding:30px 0 42px;color:var(--muted);font-size:13px;margin-top:36px}
+  footer .privacy{text-align:center;margin:0 0 30px}
+  footer .privacy a{color:var(--soft)}
+  footer .fbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer .wordmark{display:inline-flex;align-items:center}
+  footer .wordmark img{height:30px;width:auto;display:block}
+  footer .social{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  footer .social a{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  footer .social a:hover{color:var(--accent);border-color:var(--accent);text-decoration:none}
+  footer .social svg{width:16px;height:16px;fill:currentColor;display:block}
+
+  @media (max-width:820px){
+    .sticky-cta{top:74px;flex-direction:column;align-items:stretch;padding:16px}
+    .sticky-cta .btn{width:100%}
+    .idea-emphasis{font-size:17px}
+    .step-card{grid-template-columns:1fr;gap:18px;padding:20px}
+    .s4-row{grid-template-columns:1fr;gap:16px;padding:18px 0}
+    .s4-head{grid-template-columns:1fr}
+    .gallery-head{grid-template-columns:1fr;gap:14px;align-items:start}
+    .flow,.flow.two{grid-template-columns:1fr}
+    .flow .cell{border-right:none;border-bottom:1px solid var(--line)}
+    .flow .cell:last-child{border-bottom:none}
+    .arrow{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="topbar">
+  <div class="band">
+    <div class="brand">
+      <a class="logo" href="https://blog.sogni.ai/"><img src="https://cdn.prod.website-files.com/6630875599550e7ce589dac0/697b965ec09abfc46653a440_logoSogni_parentBrand_WordMark_DarkMode_Green.png" alt="Sogni"></a>
+      <span class="slash">/</span>
+      <span class="sub">Blogs &amp; Newsletters</span>
+    </div>
+    <nav>
+      <a class="navlink" href="https://blog.sogni.ai/">Blogs &#9662;</a>
+      <a class="navlink" href="https://blog.sogni.ai/newsletters/">Newsletters &#9662;</a>
+      <a class="back" href="https://blog.sogni.ai/">Back to main page</a>
+      <a class="sub" href="https://www.sogni.ai/#wf-form-Marketing-Email-Signup">Subscribe</a>
+    </nav>
+  </div>
+</header>
+
+<!-- BANNER -->
+<div class="band banner">
+  <img src="newbannertopublish.png" alt="How to turn a product photo into a video ad with AI - create cinematic product commercials with Sogni Chat, shown with the CloudStep sneaker storyboard and final ad.">
+</div>
+
+<!-- MODEL PILLS -->
+<div class="pills">
+  <div class="pill"><b>GPT Image 2</b><span>One reference photo into a full storyboard sheet.</span></div>
+  <div class="pill"><b>chat.sogni.ai</b><span>Brief, render, animate - all in one chat.</span></div>
+  <div class="pill"><b>Seedance 2.0 &middot; LTX 2.3</b><span>Storyboard becomes a finished commercial.</span></div>
+</div>
+
+<!-- SEE THE RESULT -->
+<section class="first topsec">
+  <div class="col center">
+    <span class="eyebrow">See the result first</span>
+    <h2>Walk away with a product ad that looks professionally made.</h2>
+    <p>No camera, no editing suite, no week of back-and-forth. One photo and a chat, and you walk out with a polished, broadcast-style commercial. Here's the CloudStep spot we made - and everything below is exactly how you'd make your own.</p>
+    <div class="feature">
+      <video src="storyboard 0.1.mp4" autoplay muted loop controls playsinline preload="metadata" poster="cloudstep1.png"></video>
+      <figcaption>This is what one chat produces: drop a photo, describe the ad, render. Made end-to-end in chat.sogni.ai - unmute for sound.</figcaption>
+    </div>
+    <div class="sticky-cta">
+      <div class="sticky-cta-copy">
+        <span class="sticky-cta-kicker">Try it now</span>
+        <strong>Try this workflow in Sogni Chat.</strong>
+        <span>Use one product photo to generate the storyboard, video, and revisions in one conversation.</span>
+      </div>
+      <a class="btn primary" href="https://chat.sogni.ai/" target="_blank" rel="noopener">Open Sogni Chat</a>
+    </div>
+  </div>
+</section>
+
+<!-- THE IDEA + WHAT YOU'LL DO -->
+<section class="topsec">
+  <div class="band">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="eyebrow">The idea</span>
+        <h1 class="title">How to turn a product photo into a video ad with AI.</h1>
+        <p class="lead">Product commercials used to need a studio, a shoot, an editor and a week of back-and-forth. Sogni Chat collapses the whole pipeline into a single conversation.</p>
+        <p class="idea-emphasis">For small brands, the bottleneck is not imagination &mdash; it's production. A product photo is easy. A polished video ad usually means scripting, storyboarding, editing, voice-over, music, and revisions. Sogni Chat puts that whole chain into one conversation.</p>
+        <p>You drop in a reference image - a sneaker, a drink, a pair of earrings - or just describe the product. <strong>GPT Image 2</strong> renders a clean cinematic storyboard sheet with timecodes, camera notes and voice-over baked into every panel. Then you hand that sheet back to the agent and <strong>Seedance 2.0</strong> (or <strong>LTX 2.3</strong>) turns it into a finished social commercial, native audio included - all inside <strong>chat.sogni.ai</strong>.</p>
+        <p>The walkthrough below follows one real session: <strong>CloudStep</strong>, a premium sneaker, going from a single product photo to a 15-second "walk on clouds" spot.</p>
+      </div>
+      <aside class="toc-panel">
+        <span class="eyebrow">What you'll do</span>
+        <h2 class="toc-h">How to create an ad from a product photo you already have - even an unedited one.</h2>
+        <div class="steps-toc">
+          <a href="#s1"><span class="num">01</span> Bring your product in</a>
+          <a href="#s2"><span class="num">02</span> Describe the ad</a>
+          <a href="#s3"><span class="num">03</span> Confirm the cost</a>
+          <a href="#s4"><span class="num">04</span> Let the agent plan the beats</a>
+          <a href="#s5"><span class="num">05</span> The storyboard lands</a>
+          <a href="#s6"><span class="num">06</span> Render with Seedance 2.0</a>
+          <a href="#s7"><span class="num">07</span> Try a second variation</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW GALLERY (wide) -->
+<section class="topsec">
+  <div class="band">
+    <div class="gallery-head">
+      <span class="eyebrow">One workflow, any product</span>
+      <h2>Reference image &rarr; storyboard &rarr; video.<br>Every time.</h2>
+      <p>The same three-step flow works for any category. Start from a real product photo (or invent the product entirely), let GPT Image 2 build the storyboard, then render it with Seedance 2.0 or LTX 2.3. Here are four spots made exactly that way before we slow down and build CloudStep step by step.</p>
+    </div>
+
+    <div class="gallery">
+
+      <!-- HEART -->
+      <div class="ad-card">
+        <div class="ad-head"><h3>A scroll-stopping jewelry drop</h3><span class="tag">Heart earrings &middot; 9:16 &middot; 10s</span></div>
+        <div class="flow">
+          <div class="cell">
+            <div class="k"><span class="dot"></span>1 &middot; Reference image</div>
+            <img src="heart1.png" alt="Reference photo: red glass heart earrings held in a hand">
+            <p>A real phone photo of the earrings, dropped straight into the chat.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>2 &middot; Storyboard</div>
+            <img src="heart2.png" alt="Little Romance storyboard sheet: five vertical panels of the heart earrings">
+            <p>GPT Image 2 turns it into a 5-panel sheet with captions and campaign notes.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>3 &middot; Video</div>
+            <video src="heart3.mp4" autoplay muted loop controls playsinline preload="metadata"></video>
+            <p>Seedance 2.0 animates the sheet into a finished vertical spot.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANGO -->
+      <div class="ad-card">
+        <div class="ad-head"><h3>A beverage reel that actually pops</h3><span class="tag">Mango Matcha &middot; 16:9 &middot; 15s</span></div>
+        <div class="flow">
+          <div class="cell">
+            <div class="k"><span class="dot"></span>1 &middot; Reference image</div>
+            <img src="mango1.png" alt="Reference photo: a glass of layered mango matcha drink on a table">
+            <p>One snapshot of the drink sets the colour story and product.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>2 &middot; Storyboard</div>
+            <img src="mango2.png" alt="Mango Matcha storyboard sheet: seven horizontal panels from pour to final shot">
+            <p>A 7-beat commercial sheet: hook, matcha reveal, pour, hero, packshot.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>3 &middot; Video</div>
+            <video src="mango3.mp4" autoplay muted loop controls playsinline preload="metadata"></video>
+            <p>The sheet renders into a glossy 15-second beverage ad.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEACH -->
+      <div class="ad-card">
+        <div class="ad-head"><h3>A pastel launch teaser</h3><span class="tag">Sogni Peach Cloud &middot; 16:9 &middot; 12s</span></div>
+        <div class="flow">
+          <div class="cell">
+            <div class="k"><span class="dot"></span>1 &middot; Reference image</div>
+            <img src="peach1.png" alt="Reference photo: a pastel gradient Sogni Peach Cloud can held in a hand">
+            <p>The can in hand - that's the only input the agent needs.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>2 &middot; Storyboard</div>
+            <img src="peach2.png" alt="Sogni Peach Cloud storyboard sheet: six golden-hour panels by the seaside">
+            <p>Six golden-hour beats, branding and pacing already locked in.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>3 &middot; Video</div>
+            <video src="peach3.mp4" autoplay muted loop controls playsinline preload="metadata"></video>
+            <p>A soft, sun-flared summer spot straight off the sheet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OCTI -->
+      <div class="ad-card">
+        <div class="ad-head"><h3>A whole snack brand, conjured</h3><span class="tag">Octi Crunch &middot; 16:9 &middot; 15s</span></div>
+        <div class="flow">
+          <div class="cell">
+            <div class="k"><span class="dot"></span>1 &middot; Reference image</div>
+            <img src="octi0.png" alt="Reference photo: a hand holding a navy OCTI CRUNCH chips bag">
+            <p>A single product shot of the chips bag sets the brand and packaging.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>2 &middot; Storyboard</div>
+            <img src="octi1.png" alt="Octi Crunch storyboard: six cinematic panels following an Aegean fisherwoman">
+            <p>GPT Image 2 builds a six-beat cinematic sheet around the pack.</p>
+            <div class="arrow">&rarr;</div>
+          </div>
+          <div class="cell">
+            <div class="k"><span class="dot"></span>3 &middot; Video</div>
+            <video src="octi3.mp4" autoplay muted loop controls playsinline preload="metadata"></video>
+            <p>The sheet becomes a cinematic 15-second commercial.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STEP 01 -->
+<section id="s1">
+  <div class="stepwrap">
+    <div class="step-card">
+      <div class="media">
+        <figure>
+          <img src="ss0.png" alt="The CloudStep sneaker reference photo: a cream knit running shoe on concrete">
+          <figcaption>Start by dragging any product photo into chat.sogni.ai - even an unedited phone shot.</figcaption>
+        </figure>
+      </div>
+      <div class="body">
+        <span class="eyebrow">Step 01 &middot; The reference</span>
+        <h3>An imperfect photo of your product - that's the only input the agent needs.</h3>
+        <p>Start with what you already have: even a quick, unedited phone shot. Here it's a single snapshot of the <strong>CloudStep</strong> sneaker - soft knit upper, sculpted sole, the logo near the heel.</p>
+        <p>Drag it into the composer (or hit the <em>+</em> in the chat box). From this moment, Sogni Chat uses the image as the <strong>product anchor</strong>, helping the storyboard and final render keep the shoe's shape, material, logo placement, and color consistent.</p>
+        <div class="note"><b>No product yet?</b> You can describe it instead - the agent can invent the product, brand and world from words alone. A reference image just makes brand consistency effortless.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 02 -->
+<section id="s2">
+  <div class="stepwrap">
+    <div class="step-card">
+      <div class="media">
+        <figure>
+          <img src="SS1.png" alt="The CloudStep brief typed into the Sogni Chat composer">
+          <figcaption>Type how you want the ad to look - world, format, duration, voice-over - straight into the chat.</figcaption>
+        </figure>
+      </div>
+      <div class="body">
+        <span class="eyebrow">Step 02 &middot; The brief</span>
+        <h3>Just describe how you'd like the ad to look.</h3>
+        <p>The chat reads natural language, so you don't engineer a prompt - you describe the spot. Set the world, the aspect ratio, the duration, the number of frames, the mood and the voice-over. Then add a short <strong>product-consistency</strong> note so the branding never drifts between panels.</p>
+        <p>Be explicit about the <strong>aspect ratio</strong> you want - <strong>16:9</strong> for YouTube and landscape, <strong>9:16</strong> for Reels, Stories and TikTok, or <strong>1:1</strong> for the feed - and the storyboard and the final video both come out in exactly that frame.</p>
+        <p>That single message is enough. The agent picks the right image model for your quality tier, plans the beats, and hands you a cost estimate before a single credit is spent.</p>
+        <div class="prompt">
+          <div class="label"><span>Prompt &middot; CloudStep brief</span><button class="copybtn" data-copy="cloudstep">Copy</button></div>
+<pre id="cloudstep">Create a premium 15-second cinematic commercial storyboard for CLOUDSTEP sneakers in a dreamy cloud world at sunrise.
+
+Aspect Ratio: 16:9
+Duration: 15 seconds
+Frames: 9
+
+Soft pastel colors, warm golden light, pink, peach, lavender and blue tones, ultra-realistic clouds, luxury footwear commercial, photorealistic, high-end product cinematography, soft cinematic lighting, shallow depth of field, premium advertising aesthetic.
+
+A person steps onto a soft path of clouds above the sky at sunrise, wearing CLOUDSTEP sneakers. The camera follows their walk with smooth cinematic movement, showing the shoes gently sinking into the fluffy cloud surfaces and bouncing back with a weightless, cushioned feel. Close-up shots highlight the soft sole, premium knit texture, and the CLOUDSTEP branding. The video builds toward an epic sunrise moment, ending with a clean hero shot of the sneaker floating above the clouds. End frame: Walk on the clouds.
+
+Important product consistency:
+- The word "CLOUDSTEP" must be visible on the shoe near the ankle/heel area in close-up shots.
+- No floating logos in the environment.
+- Maintain identical shoe design throughout all shots.
+
+Voice Over:
+"Somewhere between a dream and reality... there's Cloudstep.
+So soft. So light. Every step feels weightless.
+Like walking on clouds. Cloudstep. Walk on clouds."</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 03 -->
+<section id="s3">
+  <div class="stepwrap">
+    <div class="step-card">
+      <div class="media">
+        <figure>
+          <img src="ss 1.2.png" alt="Confirm generation panel: GPT Image 2 at 2672x1504, estimated 78 Spark">
+          <figcaption>Check the cost, then hit Start generation - you approve every render before it runs.</figcaption>
+        </figure>
+      </div>
+      <div class="body">
+        <span class="eyebrow">Step 03 &middot; Confirm the cost</span>
+        <h3>Every job estimates first. You decide when to spend.</h3>
+        <p>Before anything renders, Sogni Chat opens a <strong>Confirm generation</strong> panel: the model (<strong>GPT Image 2</strong>), the output size, the quality tier and the exact cost in <strong>Spark credits</strong>. For this storyboard sheet it's about <strong>78 Spark</strong>.</p>
+        <p>Trust the agent for a longer run? Flip <em>"Don't ask me again this session"</em> and the chain runs uninterrupted. Otherwise every step stays metered, transparent and yours to approve.</p>
+        <div class="note"><strong>Worth knowing.</strong> Free monthly Spark goes toward Sogni's broader open-source model lineup. Premium models like <em class="m">GPT Image 2</em> and <em class="m">Seedance 2.0</em> are pay-as-you-go with <strong>Premium Spark</strong>, no subscription required. If you want to stay on the open-model side, newer options like <em class="m">LTX-2.3</em> and <em class="m">Wan 2.2</em> are there too. <a href="https://docs.sogni.ai/pricing/">See the full pricing &rarr;</a></div>
+        <a class="cta-link" href="https://chat.sogni.ai/" target="_blank" rel="noopener" data-copyopen="cloudstep">Copy the CloudStep prompt &amp; open Sogni Chat &rarr;</a>
+        <span class="cta-hint">Click to copy the prompt - then just paste it into the chat.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 04 -->
+<section id="s4">
+  <div class="stepwrap">
+    <div class="step-card s4">
+      <div class="s4-row">
+        <div class="body">
+          <span class="eyebrow">Step 04 &middot; The plan</span>
+          <h3>The agent breaks your brief into a real shot list.</h3>
+          <p>First, it plans. You watch it inspect the reference, draft a creative brief and capture the storyboard "contract" - the structure it will draw to.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="ss 1.3.png" alt="The agent's thinking panel: inspecting image context, planning storyboard structure">
+            <figcaption>Watch the agent plan your ad before it draws a thing.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>Then it lays out a proper <strong>beat sheet</strong>: every panel gets a timecode, a visual, a camera move, a line of voice-over or audio, and a transition. You can read the whole 9-beat plan and approve it - or tell it what to revise - <em>before</em> any image is drawn.</p>
+          <p>It reads like the shot list a real agency would hand a film crew - except it's built in minutes. This is the moment where the rhythm of your fifteen seconds is actually decided: where the hook lands, how long the hero shot holds, when the logo arrives and what the voice-over says over each frame. Get it right here and the rest of the workflow just follows the plan.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="ss2.png" alt="The CloudStep beat sheet: nine beats with visual, camera, audio and transition columns">
+            <figcaption>Read the shot list and tell the chat what to change - in plain words.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>Every row is a real production decision you can edit in plain language. Change a camera move from a slow push to a handheld follow, swap a line of voice-over, retime a beat so the hero shot lands later, or cut a panel entirely. The agent rewrites the contract and keeps everything else intact - you're never re-prompting the whole thing from scratch.</p>
+          <div class="note"><b>Why approve the script first?</b> Catching a pacing or framing note here costs nothing. Fixing it after the render costs credits.</div>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="ss3.png" alt="Lower half of the beat sheet ending with Create storyboard image and Revise script buttons">
+            <figcaption>Happy with the plan? Hit "Create storyboard image" to build it.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 05 -->
+<section id="s5">
+  <div class="stepwrap">
+    <div class="step-card s4">
+      <div class="s4-row">
+        <div class="body">
+          <span class="eyebrow">Step 05 &middot; The sheet</span>
+          <h3>One generation. One printable storyboard. Product locked.</h3>
+          <p>The agent renders every approved beat together as a single sheet - nine panels in sequence, each with its timecode and on-screen voice-over caption. Because they're drawn in one shot, the shoe stays identical across every frame: same knit, same sole, same logo placement, same light.</p>
+          <p>That consistency is the whole point. It's what makes the next step - turning the sheet into motion - actually hold together.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="ss4.png" alt="The storyboard sheet delivered inside the Sogni Chat conversation">
+            <figcaption>Your storyboard lands right back in the chat, one message later.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>The sheet format is deliberate, too. It's something you can actually use: drop it into a deck, send it to a client for sign-off, or print it and mark it up. Each panel reads like a frame from the finished spot, so the whole team can see the ad - pacing, framing, copy and all - before a single second of video is rendered.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="cloudstep1.png" alt="The finished CloudStep storyboard sheet: nine panels of the sneaker walking on clouds at sunrise">
+            <figcaption>Review the full sheet, then ask the chat to turn it into video.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 06 -->
+<section id="s6">
+  <div class="stepwrap">
+    <div class="step-card s4">
+      <div class="s4-row">
+        <div class="body">
+          <span class="eyebrow">Step 06 &middot; The render</span>
+          <h3>Hand the sheet to Seedance 2.0. The storyboard becomes the shoot.</h3>
+          <p>Reply <em>"Looks good, generate the video,"</em> or tap the button under the sheet. The agent feeds the storyboard into <strong>Seedance 2.0</strong>, treats every panel as a keyframe, and stitches motion, transitions and pacing between them - same shoe, same light, now moving. Native audio is included.</p>
+          <div class="prompt">
+            <div class="label"><span>Prompt &middot; Render</span><button class="copybtn" data-copy="render">Copy</button></div>
+            <pre id="render">Looks good, generate the video.</pre>
+          </div>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="ss5.png" alt="Seedance 2.0 rendering the CloudStep video inside the chat, credits and time remaining shown">
+            <figcaption>Ask the chat to render - Seedance 2.0 animates the sheet while you wait.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>Seconds later the finished clip lands right back in the chat, and you can keep shaping it without ever leaving. Regenerate a single beat, nudge the motion, or extend a shot - only the part you touch changes, and the product stays locked across every frame.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="s6.png" alt="The finished CloudStep clip delivered in the chat with extend, refine and export options">
+            <figcaption>Refine, extend or export your ad without leaving the chat.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>What you get back is a real commercial, not a rough draft. Smooth camera motion, clean cuts between beats, the voice-over read and music sitting underneath - all in one file. Download it as an MP4 in the format you briefed and drop it straight onto your store page, your socials or an ad campaign.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <video src="storyboard 0.1.mp4" autoplay muted loop controls playsinline preload="metadata" poster="cloudstep1.png"></video>
+            <figcaption>Your finished ad - export it straight to MP4, audio included.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 07 -->
+<section id="s7">
+  <div class="stepwrap">
+    <div class="step-card s4">
+      <div class="s4-row">
+        <div class="body">
+          <span class="eyebrow">Step 07 &middot; Another take</span>
+          <h3>Same product, a brighter mood - in one more prompt.</h3>
+          <p>Because the product identity is already captured, exploring variations is cheap. Ask for a warmer, golden-hour version and the agent rebuilds the sheet - same CloudStep sneaker, new light, new pacing - then renders it again.</p>
+          <p>Here's a second pass: a sunlit "Video Storyboard" cut and the clip that came out of it. Two distinct commercials from one product photo.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <img src="cloudstep2.png" alt="A second CloudStep storyboard sheet in warm golden-hour tones, nine scenes">
+            <figcaption>Ask for a new mood and the chat rebuilds the storyboard in seconds.</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="s4-row">
+        <div class="body">
+          <p>This is where the workflow pays off. The first ad did the hard work - locking the product, the voice and the structure - so every variation after it is just one more prompt: a festive cut, a moodier night version, a square crop for the feed and a vertical one for Stories. Save the whole chain as a <strong>Workflow Template</strong> and the next product drops straight into the same pipeline.</p>
+        </div>
+        <div class="media">
+          <figure>
+            <video src="cloudstep2.1.mp4" autoplay muted loop controls playsinline preload="metadata" poster="cloudstep2.png"></video>
+            <figcaption>Render the variation the same way - one more prompt, a fresh ad.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING / TRY IT NOW -->
+<section class="topsec">
+  <div class="band">
+    <div class="hero" style="align-items:center">
+      <div class="hero-text">
+        <span class="eyebrow"><span style="color:var(--accent)">&#9679;</span> Try it now</span>
+        <h2>One chat. One product. From a photo to a finished commercial.</h2>
+        <p>That's the whole point of Sogni Chat. The same conversation that reads your product photo drafts the storyboard, and the same conversation that drafts the storyboard renders the video. Every step is metered, every step is reversible, and the asset manifest keeps your product locked across all of it.</p>
+        <p>Start with a photo, end with a finished ad. Then save it as a <strong>Workflow Template</strong> and the next product launch, promo or social spot is one prompt away - not a pile of separate panel calls.</p>
+        <div class="btns" style="justify-content:flex-start;margin-top:24px">
+          <a class="btn primary" href="https://chat.sogni.ai/">Open chat.sogni.ai</a>
+          <a class="btn ghost" href="https://docs.sogni.ai/sogni-chat/">Read the docs</a>
+        </div>
+      </div>
+      <div class="feature">
+        <img src="final image.png" alt="Finished CloudStep commercial - hero still of the sneaker on clouds">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="band">
+    <p class="privacy">We care about your data in our <a href="https://www.sogni.ai/privacy-policy">privacy policy</a>.</p>
+    <div class="fbar">
+      <a class="wordmark" href="https://www.sogni.ai/"><img src="https://cdn.prod.website-files.com/6630875599550e7ce589dac0/697b965e99cf495a05a7745e_logoSogni_parentBrand_WordMark_DarkMode_White.png" alt="Sogni"></a>
+      <div class="social">
+        <a href="https://discord.gg/2JjzA2zrrc" aria-label="Discord" title="Discord"><svg viewBox="0 0 24 24"><path d="M20 5a17 17 0 0 0-4.2-1.3l-.2.5a13 13 0 0 1 3.7 1.2 14 14 0 0 0-12 0A13 13 0 0 1 11 4.2L10.8 3.7A17 17 0 0 0 6.5 5C3.7 9 3 13 3.3 17a17 17 0 0 0 5.2 2.6l.4-1a11 11 0 0 1-1.8-.9l.4-.3a12 12 0 0 0 10.6 0l.4.3a11 11 0 0 1-1.8.9l.4 1A17 17 0 0 0 22 17c.4-4.7-.7-8.7-2-12zM9.3 14.7c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7zm5.4 0c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7z"/></svg></a>
+        <a href="https://t.me/sogniai" aria-label="Telegram" title="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.4 2.9 11.6c-1 .4-1 1.4-.2 1.7l4.9 1.5 1.8 5.7c.2.6.4.7.9.4l2.7-2 4.7 3.5c.6.3 1 .1 1.2-.6L23 5.5c.2-.9-.4-1.4-1.1-1.1zM8.6 14.2l8.6-5.4c.4-.2.8.1.5.4l-7 6.3-.3 3-1.4-4.3z"/></svg></a>
+        <a href="https://www.youtube.com/@SogniAI?sub_confirmation=1" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24"><path d="M23 7.5a3 3 0 0 0-2-2.1C19 5 12 5 12 5s-7 0-9 .4A3 3 0 0 0 1 7.5 31 31 0 0 0 .7 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2 2.1C5 19 12 19 12 19s7 0 9-.4a3 3 0 0 0 2-2.1c.3-1.5.3-4.5.3-4.5s0-3-.3-4.5zM9.8 14.8V9.2l4.8 2.8z"/></svg></a>
+        <a href="https://www.reddit.com/r/Sogni_Protocol/" aria-label="Reddit" title="Reddit"><svg viewBox="0 0 24 24"><path d="M22 11.2a2 2 0 0 0-3.4-1.4 9.8 9.8 0 0 0-5-1.5l.9-4 2.8.6a1.4 1.4 0 1 0 .2-1l-3.4-.7c-.2 0-.4.1-.4.3l-1 4.5a9.8 9.8 0 0 0-5.1 1.5A2 2 0 1 0 4 13.6a3.7 3.7 0 0 0 0 .7c0 3.3 3.6 5.9 8 5.9s8-2.6 8-5.9a3.7 3.7 0 0 0 0-.7 2 2 0 0 0 1-1.4zM8 13.5a1.4 1.4 0 1 1 1.4 1.4A1.4 1.4 0 0 1 8 13.5zm6.8 3.3a4.8 4.8 0 0 1-2.8.8 4.8 4.8 0 0 1-2.8-.8.4.4 0 0 1 .5-.6 4 4 0 0 0 2.3.6 4 4 0 0 0 2.3-.6.4.4 0 1 1 .5.6zm-.2-1.9a1.4 1.4 0 1 1 1.4-1.4 1.4 1.4 0 0 1-1.4 1.4z"/></svg></a>
+        <a href="https://instagram.com/sogni.ai" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c-2.7 0-3 0-4.1.1-1 0-1.8.2-2.4.5a4.9 4.9 0 0 0-1.8 1.1A4.9 4.9 0 0 0 2.6 5.5c-.3.6-.5 1.4-.5 2.4C2 9 2 9.3 2 12s0 3 .1 4.1c0 1 .2 1.8.5 2.4a4.9 4.9 0 0 0 1.1 1.8 4.9 4.9 0 0 0 1.8 1.1c.6.3 1.4.5 2.4.5C9 22 9.3 22 12 22s3 0 4.1-.1c1 0 1.8-.2 2.4-.5a5.1 5.1 0 0 0 2.9-2.9c.3-.6.5-1.4.5-2.4C22 15 22 14.7 22 12s0-3-.1-4.1c0-1-.2-1.8-.5-2.4a4.9 4.9 0 0 0-1.1-1.8 4.9 4.9 0 0 0-1.8-1.1c-.6-.3-1.4-.5-2.4-.5C15 2 14.7 2 12 2zm0 1.8c2.7 0 3 0 4 .1.9 0 1.5.2 1.8.3.5.2.8.4 1.1.7.3.3.5.6.7 1.1.1.3.3.9.3 1.8.1 1 .1 1.3.1 4s0 3-.1 4c0 .9-.2 1.5-.3 1.8-.2.5-.4.8-.7 1.1-.3.3-.6.5-1.1.7-.3.1-.9.3-1.8.3-1 .1-1.3.1-4 .1s-3 0-4-.1c-.9 0-1.5-.2-1.8-.3-.5-.2-.8-.4-1.1-.7-.3-.3-.5-.6-.7-1.1-.1-.3-.3-.9-.3-1.8-.1-1-.1-1.3-.1-4s0-3 .1-4c0-.9.2-1.5.3-1.8.2-.5.4-.8.7-1.1.3-.3.6-.5 1.1-.7.3-.1.9-.3 1.8-.3 1-.1 1.3-.1 4-.1zm0 3.1A5.1 5.1 0 1 0 17.1 12 5.1 5.1 0 0 0 12 6.9zm0 8.4A3.3 3.3 0 1 1 15.3 12 3.3 3.3 0 0 1 12 15.3zm5.3-8.6a1.2 1.2 0 1 0 1.2 1.2 1.2 1.2 0 0 0-1.2-1.2z"/></svg></a>
+        <a href="https://twitter.com/sogni_protocol" aria-label="X" title="X"><svg viewBox="0 0 24 24"><path d="M18.2 2h3.3l-7.2 8.2L23 22h-6.6l-5.2-6.8L5.3 22H2l7.7-8.8L1.7 2h6.8l4.7 6.2zm-1.2 18h1.8L7.1 3.9H5.2z"/></svg></a>
+        <a href="https://www.linkedin.com/company/sogni-ai" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24"><path d="M20.4 3H3.6A.6.6 0 0 0 3 3.6v16.8a.6.6 0 0 0 .6.6h16.8a.6.6 0 0 0 .6-.6V3.6a.6.6 0 0 0-.6-.6zM8.3 18.3H5.5V9.5h2.8zM6.9 8.3a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6zm11.4 10H15.5v-4.3c0-1 0-2.3-1.4-2.3s-1.6 1.1-1.6 2.3v4.3H9.7V9.5h2.7v1.2a3 3 0 0 1 2.7-1.5c2.9 0 3.4 1.9 3.4 4.3z"/></svg></a>
+        <a href="https://github.com/Sogni-AI" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.7 18 5 18 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+        <a href="https://medium.com/sogni" aria-label="Medium" title="Medium"><svg viewBox="0 0 24 24"><path d="M2.8 7.4a.7.7 0 0 0-.2-.6L1.1 5.1V5H6l3.7 8.1L13 5h4.6v.1l-1.3 1.2a.4.4 0 0 0-.1.4v9.2a.4.4 0 0 0 .1.4l1.2 1.2v.1h-6v-.1l1.3-1.3c.1-.1.1-.1.1-.4V8.1l-3.6 9.1h-.5L4.6 8.1v6.1a.9.9 0 0 0 .2.7l1.7 2v.1H1.7v-.1l1.7-2a.8.8 0 0 0 .2-.7z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.copybtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      if(!el) return;
+      navigator.clipboard.writeText(el.innerText).then(function(){
+        var t = btn.textContent; btn.textContent = 'Copied';
+        setTimeout(function(){ btn.textContent = t; }, 1400);
+      });
+    });
+  });
+
+  /* copy the prompt to clipboard when opening the chat, so it's ready to paste */
+  document.querySelectorAll('[data-copyopen]').forEach(function(a){
+    a.addEventListener('click', function(){
+      var el = document.getElementById(a.getAttribute('data-copyopen'));
+      if(el){ try{ navigator.clipboard.writeText(el.innerText); }catch(e){} }
+    });
+  });
+
+  /* image lightbox: click any content image to open fullscreen; close via X, backdrop, or Esc */
+  (function(){
+    var lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lb-close" aria-label="Close">&times;</button><img alt="">';
+    document.body.appendChild(lb);
+    var lbImg = lb.querySelector('img');
+    var closeBtn = lb.querySelector('.lb-close');
+    function openLb(src, alt){ lbImg.src = src; lbImg.alt = alt || ''; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeLb(){ lb.classList.remove('open'); lbImg.removeAttribute('src'); document.body.style.overflow = ''; }
+    document.querySelectorAll('img').forEach(function(im){
+      if (im.closest('.topbar') || im.closest('footer') || im.closest('.lightbox')) return;
+      im.classList.add('lb-zoom');
+      im.addEventListener('click', function(){ openLb(im.currentSrc || im.src, im.alt); });
+    });
+    closeBtn.addEventListener('click', closeLb);
+    lb.addEventListener('click', function(e){ if (e.target === lb) closeLb(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && lb.classList.contains('open')) closeLb(); });
+  })();
+</script>
+</body>
+</html>
