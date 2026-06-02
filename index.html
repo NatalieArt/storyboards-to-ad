@@ -140,6 +140,18 @@
   .note .m{color:var(--accent);font-style:italic;font-weight:600}
   .note a{color:var(--accent-2);white-space:nowrap}
 
+  /* sticky CTA under the first video */
+  .sticky-cta{position:sticky;top:82px;z-index:35;display:flex;align-items:center;justify-content:space-between;gap:18px;
+    background:rgba(13,16,12,.94);backdrop-filter:blur(12px);border:1px solid rgba(91,240,210,.28);border-radius:16px;
+    padding:16px 18px;margin:24px 0 0;box-shadow:0 18px 44px rgba(0,0,0,.24);text-align:left}
+  .sticky-cta-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .sticky-cta-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .sticky-cta-copy strong{font-size:18px;line-height:1.2;color:var(--ink)}
+  .sticky-cta-copy span{color:var(--soft);font-size:14px;line-height:1.45}
+  .sticky-cta .btn{white-space:nowrap;flex:none}
+
+  .idea-emphasis{font-size:18px;line-height:1.55;color:var(--ink);font-weight:700}
+
   /* TOC */
   .steps-toc{display:flex;flex-direction:column;gap:8px;margin:14px 0 0;text-align:left}
   .steps-toc a{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;color:var(--ink);font-size:13.5px;font-weight:600;transition:border-color .15s}
@@ -235,6 +247,9 @@
     .gallery-head{margin-bottom:24px;text-align:left}
     .ad-head{padding:14px 16px}
     .ad-head h3{font-size:18px}
+    .sticky-cta{top:74px;flex-direction:column;align-items:stretch;padding:16px}
+    .sticky-cta .btn{width:100%}
+    .idea-emphasis{font-size:17px}
     .step-card{grid-template-columns:1fr;gap:18px;padding:18px}
     .step-card .media{order:0}
     .step-card .media img,.step-card .media video{width:100%;max-height:none}
@@ -261,6 +276,7 @@
     .brand .logo img{height:22px}
     .brand .slash{display:none}
     .topbar nav a.sub{padding:9px 12px;font-size:12px}
+    .sticky-cta-copy strong{font-size:17px}
     .steps-toc a{padding:10px 12px;font-size:13px}
     .steps-toc .num{width:28px;height:28px}
     .btn{width:100%}
@@ -309,6 +325,14 @@
       <video src="assets/cloudstep-commercial.mp4" autoplay muted loop controls playsinline preload="metadata" poster="assets/cloudstep1.png"></video>
       <figcaption>This is what one chat produces: drop a photo, describe the ad, render. Made end-to-end in chat.sogni.ai - unmute for sound.</figcaption>
     </div>
+    <div class="sticky-cta">
+      <div class="sticky-cta-copy">
+        <span class="sticky-cta-kicker">Try it now</span>
+        <strong>Try this workflow in Sogni Chat.</strong>
+        <span>Use one product photo to generate the storyboard, video, and revisions in one conversation.</span>
+      </div>
+      <a class="btn primary" href="https://chat.sogni.ai/" target="_blank" rel="noopener">Open Sogni Chat</a>
+    </div>
   </div>
 </section>
 
@@ -320,6 +344,7 @@
         <span class="eyebrow">The idea</span>
         <h1 class="title">Storyboard to ad. One chat, one product, a finished commercial.</h1>
         <p class="lead">Product commercials used to need a studio, a shoot, an editor and a week of back-and-forth. Sogni Chat collapses the whole pipeline into a single conversation.</p>
+        <p class="idea-emphasis">For small brands, the bottleneck is not imagination &mdash; it's production. A product photo is easy. A polished video ad usually means scripting, storyboarding, editing, voice-over, music, and revisions. Sogni Chat puts that whole chain into one conversation.</p>
         <p>You drop in a reference image - a sneaker, a drink, a pair of earrings - or just describe the product. <strong>GPT Image 2</strong> renders a clean cinematic storyboard sheet with timecodes, camera notes and voice-over baked into every panel. Then you hand that sheet back to the agent and <strong>Seedance 2.0</strong> (or <strong>LTX 2.3</strong>) turns it into a finished social commercial, native audio included - all inside <strong>chat.sogni.ai</strong>.</p>
         <p>The walkthrough below follows one real session: <strong>CloudStep</strong>, a premium sneaker, going from a single product photo to a 15-second "walk on clouds" spot.</p>
       </div>
